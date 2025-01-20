@@ -12,6 +12,10 @@ class HomeViewModel: ObservableObject {
     @Published var exercise: Int = 0
     @Published var stand: Int = 0
     
+    @Published var activities = [Activity]()
+    
+    @Published var workouts = [Workout]()
+    
     let healthManager = HealthManager.shared
     
     
@@ -23,6 +27,9 @@ class HomeViewModel: ObservableObject {
                 fetchTodayCalories()
                 fetchTodayExerciseTime()
                 fetchTodayStandHours()
+                fetchTodaySteps()
+                fetchCurrentWeekActivities()
+                
             } catch {
                 print(error.localizedDescription)
             }
@@ -37,6 +44,8 @@ class HomeViewModel: ObservableObject {
             case .success(let calories):
                 DispatchQueue.main.async {
                     self.calories = Int(calories)
+                    let activity = Activity(title: "Calories Burned", subtitle: "today", image: "flame.fill", tintColor: .red, amount: calories.formattedNumberString())
+                    self.activities.append(activity)
                 }
             }
         }
@@ -63,6 +72,33 @@ class HomeViewModel: ObservableObject {
             case .success(let hours):
                 DispatchQueue.main.async {
                     self.stand = hours
+                }
+            }
+        }
+    }
+    
+    // MARK: Fitness Activity
+    func fetchTodaySteps() {
+        healthManager.fetchTodaySteps { result in
+            switch result {
+            case .failure(let error):
+                print(error.localizedDescription)
+            case .success(let activity):
+                DispatchQueue.main.async {
+                    self.activities.append(activity)
+                }
+            }
+        }
+    }
+    
+    func fetchCurrentWeekActivities() {
+        healthManager.fetchCurrentWeekWorkoutStats { result in
+            switch result {
+            case .failure(let error):
+                print(error.localizedDescription)
+            case .success(let activities):
+                DispatchQueue.main.async {
+                    self.activities.append(contentsOf: activities)
                 }
             }
         }
