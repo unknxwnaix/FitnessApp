@@ -12,38 +12,6 @@ struct HomeView: View {
     @State var active: Int = 52
     @State var stand: Int = 8
     
-    var mockData: [Activity] = [
-        .init(
-            title: "Today steps",
-            subtitle: "Goal 12,000",
-            image: "figure.run",
-            tintColor: .green,
-            amount: "6,123"
-        ),
-        .init(
-            title: "Today",
-            subtitle: "Goal 1,000",
-            image: "figure.walk",
-            tintColor: .red,
-            amount: "812"
-        ),
-        .init(
-            title: "Today steps",
-            subtitle: "Goal 12,000",
-            image: "figure.walk",
-            tintColor: .blue,
-            amount: "6,123"
-        ),
-        .init(
-            title: "Today steps",
-            subtitle: "Goal 50,000",
-            image: "figure.run",
-            tintColor: .purple,
-            amount: "55,812"
-        )
-
-    ]
-    
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
@@ -59,6 +27,7 @@ struct HomeView: View {
                                 .padding(40)
                         }
                         .frame(width: 220, height: 220)
+                        .shadow(radius: 5, x: 3, y: 3)
                         .padding(.horizontal)
                         
                         Spacer()
@@ -107,7 +76,7 @@ struct HomeView: View {
                     LazyVGrid(columns: Array(repeating: GridItem(spacing:10), count: 2)) {
                         
                         Section {
-                            ForEach(mockData, id: \.id) { activity in
+                            ForEach(Activity.mockActivities, id: \.id) { activity in
                                 ActivityCardView(activity: activity)
                             }
                         } header: {
@@ -117,17 +86,45 @@ struct HomeView: View {
                                 
                                 Spacer()
                                 
-                                Button {
-                                    print("show more")
+                                NavigationLink {
+                                    EmptyView()
                                 } label: {
                                     Text("Show More")
                                 }
                                 .buttonStyle(.bordered)
                                 .tint(.green)
                             }
-                            .padding()
+                            .padding(.vertical)
                         }
                     }
+                    .padding(.horizontal)
+                    .padding(.top)
+                    
+                    LazyVStack {
+                        Section {
+                            ForEach(Workout.mockWorkouts, id: \.id) { workout in
+                                WorkoutCardView(workout: workout)
+                            }
+                        } header: {
+                            HStack {
+                                Text("Recent Workouts")
+                                    .font(.title2)
+                                
+                                Spacer()
+                                
+                                NavigationLink {
+                                    EmptyView()
+                                } label: {
+                                    Text("Show More")
+                                }
+                                .buttonStyle(.bordered)
+                                .tint(.green)
+                            }
+                            .padding(.vertical)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.top)
                 }
             }
             .navigationTitle("Welcome")
