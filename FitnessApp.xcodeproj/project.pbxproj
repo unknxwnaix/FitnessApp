@@ -11,6 +11,9 @@
 		5D305F8B2DB652740019B382 /* FitnessWatchApp Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 5D305F812DB652730019B382 /* FitnessWatchApp Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5D305FB12DB65D740019B382 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5D305FB02DB65D740019B382 /* FirebaseCore */; };
 		5D84747F2DB65F5300AF52CC /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 5D84747E2DB65F5300AF52CC /* FirebaseFirestore */; };
+		5D97F48D2DBE57B9006A9EC3 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DFB6A272DBD9831007AE3C1 /* WidgetKit.framework */; };
+		5D97F48E2DBE57B9006A9EC3 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DFB6A292DBD9831007AE3C1 /* SwiftUI.framework */; };
+		5D97F49F2DBE57BA006A9EC3 /* TrainingActivityWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5D97F48C2DBE57B9006A9EC3 /* TrainingActivityWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5DEB63AD2D7F093000951C87 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 5DEB63AC2D7F093000951C87 /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
@@ -21,6 +24,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 5D305F802DB652730019B382;
 			remoteInfo = "FitnessWatchApp Watch App";
+		};
+		5D97F49D2DBE57BA006A9EC3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5D37F6C82D3E5E8D002DBA5E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5D97F48B2DBE57B9006A9EC3;
+			remoteInfo = TrainingActivityWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -46,12 +56,50 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5DFB6A402DBD9832007AE3C1 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5D97F49F2DBE57BA006A9EC3 /* TrainingActivityWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		5D305F812DB652730019B382 /* FitnessWatchApp Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FitnessWatchApp Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D37F6D02D3E5E8D002DBA5E /* FitnessApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitnessApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D97F48C2DBE57B9006A9EC3 /* TrainingActivityWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TrainingActivityWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5DFB6A272DBD9831007AE3C1 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		5DFB6A292DBD9831007AE3C1 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5D97F4A32DBE57BA006A9EC3 /* Exceptions for "TrainingActivityWidget" folder in "TrainingActivityWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5D97F48B2DBE57B9006A9EC3 /* TrainingActivityWidgetExtension */;
+		};
+		5D97F4B02DBE580C006A9EC3 /* Exceptions for "FitnessApp" folder in "TrainingActivityWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Managers/WorkoutAttributes.swift,
+			);
+			target = 5D97F48B2DBE57B9006A9EC3 /* TrainingActivityWidgetExtension */;
+		};
+		5DFB6A672DBDA457007AE3C1 /* Exceptions for "FitnessApp" folder in "FitnessApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5D37F6CF2D3E5E8D002DBA5E /* FitnessApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5D305F822DB652730019B382 /* FitnessWatchApp Watch App */ = {
@@ -61,7 +109,19 @@
 		};
 		5D37F6D22D3E5E8D002DBA5E /* FitnessApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5DFB6A672DBDA457007AE3C1 /* Exceptions for "FitnessApp" folder in "FitnessApp" target */,
+				5D97F4B02DBE580C006A9EC3 /* Exceptions for "FitnessApp" folder in "TrainingActivityWidgetExtension" target */,
+			);
 			path = FitnessApp;
+			sourceTree = "<group>";
+		};
+		5D97F48F2DBE57B9006A9EC3 /* TrainingActivityWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5D97F4A32DBE57BA006A9EC3 /* Exceptions for "TrainingActivityWidget" folder in "TrainingActivityWidgetExtension" target */,
+			);
+			path = TrainingActivityWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -85,6 +145,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5D97F4892DBE57B9006A9EC3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D97F48E2DBE57B9006A9EC3 /* SwiftUI.framework in Frameworks */,
+				5D97F48D2DBE57B9006A9EC3 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -93,6 +162,8 @@
 			children = (
 				5D37F6D22D3E5E8D002DBA5E /* FitnessApp */,
 				5D305F822DB652730019B382 /* FitnessWatchApp Watch App */,
+				5D97F48F2DBE57B9006A9EC3 /* TrainingActivityWidget */,
+				5DFB6A262DBD9831007AE3C1 /* Frameworks */,
 				5D37F6D12D3E5E8D002DBA5E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -102,8 +173,18 @@
 			children = (
 				5D37F6D02D3E5E8D002DBA5E /* FitnessApp.app */,
 				5D305F812DB652730019B382 /* FitnessWatchApp Watch App.app */,
+				5D97F48C2DBE57B9006A9EC3 /* TrainingActivityWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		5DFB6A262DBD9831007AE3C1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5DFB6A272DBD9831007AE3C1 /* WidgetKit.framework */,
+				5DFB6A292DBD9831007AE3C1 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -141,11 +222,13 @@
 				5D37F6CE2D3E5E8D002DBA5E /* Resources */,
 				5D305F0D2DB650A30019B382 /* Embed Watch Content */,
 				5D305FA52DB65A770019B382 /* Embed Frameworks */,
+				5DFB6A402DBD9832007AE3C1 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				5D305F8A2DB652740019B382 /* PBXTargetDependency */,
+				5D97F49E2DBE57BA006A9EC3 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				5D37F6D22D3E5E8D002DBA5E /* FitnessApp */,
@@ -159,6 +242,28 @@
 			productName = FitnessApp;
 			productReference = 5D37F6D02D3E5E8D002DBA5E /* FitnessApp.app */;
 			productType = "com.apple.product-type.application";
+		};
+		5D97F48B2DBE57B9006A9EC3 /* TrainingActivityWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5D97F4A02DBE57BA006A9EC3 /* Build configuration list for PBXNativeTarget "TrainingActivityWidgetExtension" */;
+			buildPhases = (
+				5D97F4882DBE57B9006A9EC3 /* Sources */,
+				5D97F4892DBE57B9006A9EC3 /* Frameworks */,
+				5D97F48A2DBE57B9006A9EC3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5D97F48F2DBE57B9006A9EC3 /* TrainingActivityWidget */,
+			);
+			name = TrainingActivityWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = TrainingActivityWidgetExtension;
+			productReference = 5D97F48C2DBE57B9006A9EC3 /* TrainingActivityWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -175,6 +280,9 @@
 					};
 					5D37F6CF2D3E5E8D002DBA5E = {
 						CreatedOnToolsVersion = 16.2;
+					};
+					5D97F48B2DBE57B9006A9EC3 = {
+						CreatedOnToolsVersion = 16.3;
 					};
 				};
 			};
@@ -198,6 +306,7 @@
 			targets = (
 				5D37F6CF2D3E5E8D002DBA5E /* FitnessApp */,
 				5D305F802DB652730019B382 /* FitnessWatchApp Watch App */,
+				5D97F48B2DBE57B9006A9EC3 /* TrainingActivityWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -211,6 +320,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		5D37F6CE2D3E5E8D002DBA5E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5D97F48A2DBE57B9006A9EC3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -234,6 +350,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5D97F4882DBE57B9006A9EC3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -241,6 +364,11 @@
 			isa = PBXTargetDependency;
 			target = 5D305F802DB652730019B382 /* FitnessWatchApp Watch App */;
 			targetProxy = 5D305F892DB652740019B382 /* PBXContainerItemProxy */;
+		};
+		5D97F49E2DBE57BA006A9EC3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5D97F48B2DBE57B9006A9EC3 /* TrainingActivityWidgetExtension */;
+			targetProxy = 5D97F49D2DBE57BA006A9EC3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -253,7 +381,7 @@
 				CODE_SIGN_ENTITLEMENTS = "FitnessWatchApp Watch App/FitnessWatchApp Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6X2626RZHL;
+				DEVELOPMENT_TEAM = QW9LWZBRH3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "FitnessWatchApp-Watch-App-Info.plist";
@@ -261,13 +389,13 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please allow access to enjoy all features of the app";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Мы используем HealthKit для записи ваших тренировок";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.aiXCodes.FitnessApp;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.aiXCodesTwink.FitnessApp;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.aiXCodes.FitnessApp.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aiXCodesTwink.FitnessApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -286,7 +414,7 @@
 				CODE_SIGN_ENTITLEMENTS = "FitnessWatchApp Watch App/FitnessWatchApp Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6X2626RZHL;
+				DEVELOPMENT_TEAM = QW9LWZBRH3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "FitnessWatchApp-Watch-App-Info.plist";
@@ -294,13 +422,13 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please allow access to enjoy all features of the app";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Мы используем HealthKit для записи ваших тренировок";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.aiXCodes.FitnessApp;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.aiXCodesTwink.FitnessApp;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.aiXCodes.FitnessApp.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aiXCodesTwink.FitnessApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -439,9 +567,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FitnessApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 6X2626RZHL;
+				DEVELOPMENT_TEAM = QW9LWZBRH3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FitnessApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Fitness App";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please allow access to enjoy all features of the app";
@@ -456,7 +585,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.aiXCodes.FitnessApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aiXCodesTwink.FitnessApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -473,9 +602,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FitnessApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 6X2626RZHL;
+				DEVELOPMENT_TEAM = QW9LWZBRH3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FitnessApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Fitness App";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please allow access to enjoy all features of the app";
@@ -490,8 +620,68 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.aiXCodes.FitnessApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aiXCodesTwink.FitnessApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		5D97F4A12DBE57BA006A9EC3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QW9LWZBRH3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TrainingActivityWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TrainingActivityWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aiXCodesTwink.FitnessApp.TrainingWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5D97F4A22DBE57BA006A9EC3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QW9LWZBRH3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TrainingActivityWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TrainingActivityWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aiXCodesTwink.FitnessApp.TrainingWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -524,6 +714,15 @@
 			buildConfigurations = (
 				5D37F6DF2D3E5E90002DBA5E /* Debug */,
 				5D37F6E02D3E5E90002DBA5E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5D97F4A02DBE57BA006A9EC3 /* Build configuration list for PBXNativeTarget "TrainingActivityWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D97F4A12DBE57BA006A9EC3 /* Debug */,
+				5D97F4A22DBE57BA006A9EC3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

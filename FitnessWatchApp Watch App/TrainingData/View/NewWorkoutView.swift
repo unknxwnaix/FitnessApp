@@ -33,14 +33,8 @@ struct NewWorkoutView: View {
                     showConfigurationSheet = true
                 }, label: {
                     Text(workoutType.string)
-                        .foregroundStyle(Color.fitnessGreenMain)
-                        .frame(minWidth: .infinity)
-                        .background {
-                            Rectangle()
-                                .fill(Color.fitnessGreenMain.opacity(0.3))
-                        }
+                        .font(.title2)
                 })
-                .buttonStyle(.borderless)
             }
         }
         .sheet(isPresented: $showConfigurationSheet, content:  {

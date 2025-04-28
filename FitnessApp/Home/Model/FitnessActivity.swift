@@ -1,5 +1,5 @@
 //
-//  Activity.swift
+//  FitnessActivity.swift
 //  FitnessApp
 //
 //  Created by Maxim Dmitrochenko on 1/20/25.
@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct Activity: Identifiable {
+struct FitnessActivity: Identifiable {
     let id = UUID()
     let title: String
     let subtitle: String
@@ -17,9 +17,9 @@ struct Activity: Identifiable {
     let amount: String
 }
 
-extension Activity {
-    static var mockActivities: [Activity] = [
-        Activity(
+extension FitnessActivity {
+    static var mockActivities: [FitnessActivity] = [
+        FitnessActivity(
             title: "Today steps",
             subtitle: "Goal 12,000",
             image: "figure.run",
@@ -27,7 +27,7 @@ extension Activity {
             amount: "6,123"
         ),
         
-        Activity(
+        FitnessActivity(
             title: "Today",
             subtitle: "Goal 1,000",
             image: "figure.walk",
@@ -35,7 +35,7 @@ extension Activity {
             amount: "812"
         ),
         
-        Activity(
+        FitnessActivity(
             title: "Today steps",
             subtitle: "Goal 12,000",
             image: "figure.walk",
@@ -43,7 +43,7 @@ extension Activity {
             amount: "6,123"
         ),
         
-        Activity(
+        FitnessActivity(
             title: "Today steps",
             subtitle: "Goal 50,000",
             image: "figure.run",

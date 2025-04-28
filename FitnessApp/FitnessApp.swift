@@ -7,11 +7,23 @@
 
 import SwiftUI
 import FirebaseCore
+import WatchConnectivity
 
 class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
     FirebaseApp.configure()
+    
+    // Initialize and activate WatchConnectivity
+    if WCSession.isSupported() {
+        let session = WCSession.default
+        session.delegate = WatchConnectivityManager.shared
+        session.activate()
+        print("🟢 iPhone: WCSession is supported and activated")
+    } else {
+        print("🔴 iPhone: WCSession is not supported")
+    }
+    
     return true
   }
 }

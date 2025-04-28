@@ -24,6 +24,7 @@ class WatchConnectivityManager: NSObject, ObservableObject {
         
         do {
             try WCSession.default.updateApplicationContext(data)
+            print("Workout Successfully Started! Updated Data \(data)")
         } catch {
             print("Error sending workout data: \(error.localizedDescription)")
         }
@@ -37,6 +38,7 @@ class WatchConnectivityManager: NSObject, ObservableObject {
         
         do {
             try WCSession.default.updateApplicationContext(["workoutEnded": true])
+            print("Successfully Ended Workout!")
         } catch {
             print("Error ending workout: \(error.localizedDescription)")
         }

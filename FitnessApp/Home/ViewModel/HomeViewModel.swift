@@ -24,7 +24,7 @@ class HomeViewModel: ObservableObject {
     public var activityColor: Color = .fitnessGreenMain
     public var standColor: Color = .fitnessBlueMain
     
-    @Published var activities = [Activity]()
+    @Published var activities = [FitnessActivity]()
     
     @Published var workouts = [
         Workout(
@@ -93,7 +93,7 @@ class HomeViewModel: ObservableObject {
             case .success(let calories):
                 DispatchQueue.main.async {
                     self.calories = Int(calories)
-                    let activity = Activity(title: "Calories Burned", subtitle: "today", image: "flame.fill", tintColor: .red, amount: calories.formattedNumberString())
+                    let activity = FitnessActivity(title: "Calories Burned", subtitle: "today", image: "flame.fill", tintColor: .red, amount: calories.formattedNumberString())
                     self.activities.append(activity)
                 }
             }

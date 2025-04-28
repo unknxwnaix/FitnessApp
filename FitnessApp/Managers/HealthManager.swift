@@ -85,7 +85,7 @@ class HealthManager {
     }
     
     // MARK: Fitness Activity
-    func fetchTodaySteps(completion: @escaping (Result<Activity, Error>) -> Void) {
+    func fetchTodaySteps(completion: @escaping (Result<FitnessActivity, Error>) -> Void) {
         let steps = HKQuantityType(.stepCount)
         let predicate = HKQuery.predicateForSamples(withStart: .startOfDay, end: Date())
         let query = HKStatisticsQuery(quantityType: steps, quantitySamplePredicate: predicate) { _, results, error in
@@ -95,14 +95,14 @@ class HealthManager {
             }
             
             let steps = quantity.doubleValue(for: .count())
-            let activity = Activity(title: "Today Steps", subtitle: "Goal: 10000", image: "figure.walk", tintColor: .green, amount: steps.formattedNumberString())
+            let activity = FitnessActivity(title: "Today Steps", subtitle: "Goal: 10000", image: "figure.walk", tintColor: .green, amount: steps.formattedNumberString())
             completion(.success(activity))
         }
         
         store.execute(query)
     }
     
-    func fetchCurrentWeekWorkoutStats(completion: @escaping (Result<[Activity], Error>) -> Void) {
+    func fetchCurrentWeekWorkoutStats(completion: @escaping (Result<[FitnessActivity], Error>) -> Void) {
         let workout = HKSampleType.workoutType()
         let predicate = HKQuery.predicateForSamples(withStart: .startOfWeek, end: Date())
         let query = HKSampleQuery(sampleType: workout, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { [weak self] _, results, error in
@@ -144,14 +144,14 @@ class HealthManager {
         store.execute(query)
     }
     
-    func generateActivitiesFromDurations(running: Int, strenth: Int, soccer: Int, basketball: Int, stairs: Int, walking: Int) -> [Activity] {
+    func generateActivitiesFromDurations(running: Int, strenth: Int, soccer: Int, basketball: Int, stairs: Int, walking: Int) -> [FitnessActivity] {
         return [
-            Activity(title: "Ходьба", subtitle: "На этой неделе", image: "figure.walk", tintColor: .green, amount: "\(walking) мин"),
-            Activity(title: "Бег", subtitle: "На этой неделе", image: "figure.run", tintColor: .teal, amount: "\(running) мин"),
-            Activity(title: "Силовые", subtitle: "На этой неделе", image: "dumbbell", tintColor: .blue, amount: "\(strenth) мин"),
-            Activity(title: "Футбол", subtitle: "На этой неделе", image: "figure.soccer", tintColor: .indigo, amount: "\(soccer) мин"),
-            Activity(title: "Баскетбол", subtitle: "На этой неделе", image: "figure.basketball", tintColor: .purple, amount: "\(basketball) мин"),
-            Activity(title: "Лестница", subtitle: "На этой неделе", image: "figure.stairs", tintColor: .yellow, amount: "\(stairs) мин"),
+            FitnessActivity(title: "Ходьба", subtitle: "На этой неделе", image: "figure.walk", tintColor: .green, amount: "\(walking) мин"),
+            FitnessActivity(title: "Бег", subtitle: "На этой неделе", image: "figure.run", tintColor: .teal, amount: "\(running) мин"),
+            FitnessActivity(title: "Силовые", subtitle: "На этой неделе", image: "dumbbell", tintColor: .blue, amount: "\(strenth) мин"),
+            FitnessActivity(title: "Футбол", subtitle: "На этой неделе", image: "figure.soccer", tintColor: .indigo, amount: "\(soccer) мин"),
+            FitnessActivity(title: "Баскетбол", subtitle: "На этой неделе", image: "figure.basketball", tintColor: .purple, amount: "\(basketball) мин"),
+            FitnessActivity(title: "Лестница", subtitle: "На этой неделе", image: "figure.stairs", tintColor: .yellow, amount: "\(stairs) мин"),
         ]
     }
     

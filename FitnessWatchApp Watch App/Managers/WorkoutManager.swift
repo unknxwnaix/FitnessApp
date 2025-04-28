@@ -43,12 +43,27 @@ class WorkoutManager: NSObject {
 //    ]
 
     
+    private let watchConnectivityManager = WatchConnectivityManager.shared
+    private var workoutType: WorkoutType?
+    private var startTime: Date = Date()
+    private var heartRate: Double = 0
+    private var calories: Double = 0
+    private var distance: Double = 0
+    private var duration: TimeInterval = 0
     var error: WorkoutError? {
         didSet {
             if let error {
                 print("error: \(error.message)")
             }
         }
+    }
+    
+    enum WorkoutType: String {
+        case walking = "Прогулка"
+        case running = "Бег"
+        case cycling = "Велосипед"
+        case swimming = "Плавание"
+        case hiit = "Интервальная тренировка"
     }
     
     // after session end
@@ -136,6 +151,21 @@ extension WorkoutManager {
 // MARK: - Manage workout session/builder
 extension WorkoutManager {
     
+    private func sendWorkoutUpdate() {
+        guard let workoutType = workoutType else { return }
+        
+        let workoutData: [String: Any] = [
+            "workoutType": workoutType.rawValue,
+            "startTime": startTime.timeIntervalSince1970,
+            "heartRate": heartRate,
+            "calories": calories,
+            "distance": distance,
+            "duration": duration
+        ]
+        
+        watchConnectivityManager.sendWorkoutData(workoutData)
+    }
+    
     func startWorkout(with configuration: HKWorkoutConfiguration) async {
         let result = await self.checkAvailability()
         if !result {
@@ -149,6 +179,22 @@ extension WorkoutManager {
         if !self.supportedWorkoutTypes.contains(configuration.activityType) {
             self.error = .workoutTypeNotSupported
             return
+        }
+        
+        // Set workout type based on configuration
+        switch configuration.activityType {
+        case .walking:
+            workoutType = .walking
+        case .running:
+            workoutType = .running
+        case .cycling:
+            workoutType = .cycling
+        case .swimming:
+            workoutType = .swimming
+        case .highIntensityIntervalTraining:
+            workoutType = .hiit
+        default:
+            workoutType = nil
         }
         
         do {
@@ -179,7 +225,8 @@ extension WorkoutManager {
         do {
             try await builder?.beginCollection(at: date)
             self.workoutMetrics = .init(workoutConfiguration: configuration)
-
+            // Отправляем начальные данные о тренировке
+            sendWorkoutUpdate()
         } catch(let error) {
             self.error = .startWorkoutFailed(error)
             reset()
@@ -372,7 +419,7 @@ extension WorkoutManager: HKWorkoutSessionDelegate {
         DispatchQueue.main.async {
             self.sessionRunning = (toState == .running)
         }
-        // Wait for the session to transition states before ending the builder.
+        
         if toState == .ended {
             Task {
                 do {
@@ -380,12 +427,13 @@ extension WorkoutManager: HKWorkoutSessionDelegate {
                     let workout = try await builder?.finishWorkout()
                     DispatchQueue.main.async {
                         self.workoutResult = workout
+                        // Уведомляем iPhone о завершении тренировки
+                        WatchConnectivityManager.shared.endWorkout()
                     }
                 } catch(let error) {
                     self.setError(.endWorkFailed(error))
                     return
                 }
-                
             }
         }
     }
@@ -426,7 +474,11 @@ extension WorkoutManager: HKLiveWorkoutBuilderDelegate {
             let statistics = workoutBuilder.statistics(for: quantityType)
             updateMetrics(statistics)
         }
-
+        
+        // Отправляем обновленные данные о тренировке
+        DispatchQueue.main.async {
+            self.sendWorkoutUpdate()
+        }
     }
     
     nonisolated func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
