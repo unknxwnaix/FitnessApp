@@ -44,13 +44,13 @@ struct WorkoutView: View {
                     })
                     .background {
                         Capsule()
-                            .fill(.green.opacity(0.3))
+                            .fill(Color.fitnessGreenMain.opacity(0.3))
                             .frame(width: 45, height: 30)
                             .padding(-6)
                     }
                     .padding(.trailing, 5)
                     .padding(.top, 5)
-                    .foregroundStyle(.green)
+                    .foregroundStyle(Color.fitnessGreenMain)
                     
                     Spacer(minLength: 17)
                     

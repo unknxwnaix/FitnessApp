@@ -35,7 +35,7 @@ struct TermsView: View {
                             Image(systemName: "square")
                         }
                     }
-                    .foregroundStyle(.green)
+                    .foregroundStyle(Color.fitnessGreenMain)
                     
                     Text("Нажмите здесь, чтобы подтвердить согласие с пользовательским соглашением")
                 }
@@ -53,7 +53,7 @@ struct TermsView: View {
                 }
                 .padding(.horizontal)
                 .buttonStyle(.borderedProminent)
-                .tint(.green)
+                .tint(Color.fitnessGreenMain)
                 
                 Spacer()
             }

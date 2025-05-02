@@ -10,6 +10,9 @@ import Foundation
 @MainActor
 class LeaderboardViewModel: ObservableObject {
     @Published var leaderResult = LeaderboardResult(user: nil, top10: [])
+    @Published var data = LeaderboardResult(user: nil, top10: [])
+    
+    @Published var isLoading = true
     
     var mockData: [LeaderboardUser] = [
         LeaderboardUser(username: "aiX", count: 12345),
@@ -22,9 +25,14 @@ class LeaderboardViewModel: ObservableObject {
         LeaderboardUser(username: "sean allen", count: 12345),
         LeaderboardUser(username: "lev", count: 12345),
         LeaderboardUser(username: "hacking with swift", count: 12345),
+        LeaderboardUser(username: "Test", count: 19930),
     ]
     
-    struct LeaderboardResult {
+    struct LeaderboardResult: Equatable {
+        static func == (lhs: LeaderboardResult, rhs: LeaderboardResult) -> Bool {
+            lhs.user == rhs.user && lhs.top10 == rhs.top10
+        }
+
         let user: LeaderboardUser?
         let top10: [LeaderboardUser]
     }
@@ -33,18 +41,19 @@ class LeaderboardViewModel: ObservableObject {
         Task {
             do {
                 try await setupLeaderboardData()
+                isLoading = false
             } catch {
                 print(error.localizedDescription)
             }
         }
-        
     }
     
     func setupLeaderboardData() async throws {
         try await postStepCountUpdateForUser()
+//        try await DatabaseManager.shared.createRandomUsers()
         let result = try await fetchLeaderboard()
         DispatchQueue.main.async {
-            self.leaderResult = result
+            self.data = result
         }
     }
     

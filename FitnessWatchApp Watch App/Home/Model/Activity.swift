@@ -23,7 +23,7 @@ extension Activity {
             title: "Today steps",
             subtitle: "Goal 12,000",
             image: "figure.run",
-            tintColor: .green,
+            tintColor: Color.fitnessGreenMain,
             amount: "6,123"
         ),
         

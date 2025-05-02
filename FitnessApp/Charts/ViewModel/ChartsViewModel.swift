@@ -36,52 +36,77 @@ class ChartsViewModel: ObservableObject {
     
     let healthManager = HealthManager.shared
     
+    @Published var selectedChart: ChartOption = .oneWeek
+    @Published var isLoading = true
+    @Published var isDataLoaded = false
+    
     init() {
-        fetchYTDAndOneYearData()
-        fetchThreeMonthData()
+        Task {
+            await fetchAllData()
+        }
     }
     
-    @Published var selectedChart: ChartOptions = .oneWeek
+    private func fetchAllData() async {
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+                await self.fetchYTDAndOneYearData()
+            }
+            group.addTask {
+                await self.fetchThreeMonthData()
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.isLoading = false
+            self.isDataLoaded = true
+        }
+    }
     
-    func fetchYTDAndOneYearData() {
-        healthManager.fetchYTDAndOneYearData { result in
-            switch result {
-            case .success(let result):
-                DispatchQueue.main.async {
-                    self.ytdChartData = result.ytd
-                    self.oneYearChartData = result.oneYear
-                    
-                    self.ytdTotal = self.ytdChartData.reduce(0) { $0 + $1.count }
-                    self.oneYearTotal = self.oneYearChartData.reduce(0) { $0 + $1.count }
-                    
-                    self.ytdAverage = self.ytdTotal / Calendar.current.component(.month, from: Date())
-                    self.oneYearAverage = self.oneYearTotal / 12
+    private func fetchYTDAndOneYearData() async {
+        await withCheckedContinuation { continuation in
+            healthManager.fetchYTDAndOneYearData { result in
+                switch result {
+                case .success(let result):
+                    DispatchQueue.main.async {
+                        self.ytdChartData = result.ytd
+                        self.oneYearChartData = result.oneYear
+                        
+                        self.ytdTotal = self.ytdChartData.reduce(0) { $0 + $1.count }
+                        self.oneYearTotal = self.oneYearChartData.reduce(0) { $0 + $1.count }
+                        
+                        self.ytdAverage = self.ytdTotal / Calendar.current.component(.month, from: Date())
+                        self.oneYearAverage = self.oneYearTotal / 12
+                    }
+                case .failure(let error):
+                    print(error.localizedDescription)
                 }
-            case .failure(let error):
-                print(error.localizedDescription)
+                continuation.resume()
             }
         }
     }
     
-    func fetchThreeMonthData() {
-        healthManager.fetchThreeMonthStepData { result in
-            switch result {
-            case .success(let result):
-                DispatchQueue.main.async {
-                    self.oneWeekChartData = result.oneWeek
-                    self.oneMonthChartData = result.oneMonth
-                    self.threeMonthChartData = result.threeMonths
-                    
-                    self.oneWeekTotal = self.oneWeekChartData.reduce(0) { $0 + $1.count }
-                    self.oneMonthTotal = self.oneMonthChartData.reduce(0) { $0 + $1.count }
-                    self.threeMonthTotal = self.threeMonthChartData.reduce(0) { $0 + $1.count }
-                    
-                    self.oneWeekAverage = self.oneWeekTotal / 7
-                    self.oneMonthAverage = self.oneMonthTotal / 30
-                    self.threeMonthAverage = self.threeMonthTotal / 90
+    private func fetchThreeMonthData() async {
+        await withCheckedContinuation { continuation in
+            healthManager.fetchThreeMonthStepData { result in
+                switch result {
+                case .success(let result):
+                    DispatchQueue.main.async {
+                        self.oneWeekChartData = result.oneWeek
+                        self.oneMonthChartData = result.oneMonth
+                        self.threeMonthChartData = result.threeMonths
+                        
+                        self.oneWeekTotal = self.oneWeekChartData.reduce(0) { $0 + $1.count }
+                        self.oneMonthTotal = self.oneMonthChartData.reduce(0) { $0 + $1.count }
+                        self.threeMonthTotal = self.threeMonthChartData.reduce(0) { $0 + $1.count }
+                        
+                        self.oneWeekAverage = self.oneWeekTotal / 7
+                        self.oneMonthAverage = self.oneMonthTotal / 30
+                        self.threeMonthAverage = self.threeMonthTotal / 90
+                    }
+                case .failure(let error):
+                    print(error.localizedDescription)
                 }
-            case .failure(let error):
-                print(error.localizedDescription)
+                continuation.resume()
             }
         }
     }

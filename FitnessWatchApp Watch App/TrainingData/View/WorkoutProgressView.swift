@@ -35,41 +35,11 @@ struct WorkoutProgressView: View {
                         
                         Spacer()
                         
-                        Button(action: {
-                            withAnimation {
-                                vm.showControl.toggle()
-                            }
-                        }, label: {
-                            Image(systemName: "ellipsis")
-                                .rotationEffect(.degrees(vm.showControl ? 270 : 0))
-                                .frame(width: 32, height: 32)
-                                .background(Circle().fill(.gray))
-                        })
+                        MenuButton()
                         .tint(.fitnessGreenMain)
                         .overlay(alignment: .top) {
                             if vm.showControl {
-                                let sessionRunning = workoutManager.sessionRunning
-                                VStack(spacing: 8) {
-                                    Button(action: {
-                                        sessionRunning ? workoutManager.pauseSession() : workoutManager.resumeSession()
-                                    }, label: {
-                                        Image(systemName: sessionRunning ? "pause.fill" : "arrow.clockwise")
-                                            .frame(width: 32, height: 32)
-                                            .background(Circle().fill(.orange))
-                                    })
-                                    .tint(.fitnessGreenMain)
-                                    
-                                    Button(action: {
-                                        workoutManager.endSession()
-                                        vm.showProgressView = true
-                                    }, label: {
-                                        Image(systemName: "stop.fill")
-                                            .frame(width: 32, height: 32)
-                                            .background(Circle().fill(Color.fitnessRedMain))
-                                    })
-                                    .tint(.fitnessGreenMain)
-                                }
-                                .padding(.top, 40)
+                                ControlButtons()
                             }
                         }
                         .overlay(alignment: .trailing) {
@@ -242,6 +212,46 @@ struct WorkoutProgressView: View {
     }
     
     @ViewBuilder
+    func MenuButton() -> some View {
+        Button(action: {
+            withAnimation {
+                vm.showControl.toggle()
+            }
+        }, label: {
+            Image(systemName: "ellipsis")
+                .rotationEffect(.degrees(vm.showControl ? 270 : 0))
+                .frame(width: 32, height: 32)
+                .background(Circle().fill(.gray))
+        })
+    }
+    
+    @ViewBuilder
+    func ControlButtons() -> some View {
+        let sessionRunning = workoutManager.sessionRunning
+        VStack(spacing: 8) {
+            Button(action: {
+                sessionRunning ? workoutManager.pauseSession() : workoutManager.resumeSession()
+            }, label: {
+                Image(systemName: sessionRunning ? "pause.fill" : "arrow.clockwise")
+                    .frame(width: 32, height: 32)
+                    .background(Circle().fill(.orange))
+            })
+            .tint(.fitnessGreenMain)
+            
+            Button(action: {
+                workoutManager.endSession()
+                vm.showProgressView = true
+            }, label: {
+                Image(systemName: "stop.fill")
+                    .frame(width: 32, height: 32)
+                    .background(Circle().fill(Color.fitnessRedMain))
+            })
+            .tint(.fitnessGreenMain)
+        }
+        .padding(.top, 40)
+    }
+    
+    @ViewBuilder
     func ControlIntervalOptions(metrics: WorkoutManager.WorkoutMetrics) -> some View {
         if metrics.subActivityConfiguration != nil && metrics.workoutConfiguration.activityType != .swimBikeRun {
             Button(action: {
@@ -296,7 +306,7 @@ struct WorkoutProgressView: View {
             
             HStack(spacing: 6) {
                 Image(systemName: "ruler")
-                    .foregroundColor(.green)
+                    .foregroundColor(Color.fitnessGreenMain)
                     .font(.system(size: 25))
                     .frame(width: 35)
                 Text(metrics.distance.formatted(.number.precision(.fractionLength(0))) + " \(HKStatistics.distanceUnit.unitString)")

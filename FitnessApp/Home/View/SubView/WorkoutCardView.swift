@@ -51,7 +51,7 @@ struct WorkoutCardView: View {
         workout: Workout(
             title: "Running",
             image: "figure.run",
-            tintColor: .green,
+            tintColor: Color.fitnessGreenMain,
             duration: "47 mins",
             date: "3 aug",
             calories: "181 kcal"

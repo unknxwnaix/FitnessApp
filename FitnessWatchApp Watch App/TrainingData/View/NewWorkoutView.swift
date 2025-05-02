@@ -10,12 +10,7 @@ import HealthKit
 
 struct NewWorkoutView: View {
     @Environment(WorkoutManager.self) private var workoutManager
-    @State private var selectedWorkoutType: HKWorkoutActivityType? = nil
-    @State private var showConfigurationSheet: Bool = false
-    
-    @State private var swimLocation: HKWorkoutSwimmingLocationType = .pool
-    @State private var lapLength: Int = 400
-    @State private var activityLocation: HKWorkoutSessionLocationType = .outdoor
+    @State private var vm = NewWorkoutViewModel()
 
     var body: some View {
         @Bindable var workoutManager = workoutManager
@@ -28,109 +23,15 @@ struct NewWorkoutView: View {
             
             ForEach(0..<supportedWorkoutTypes.count, id: \.self) { index in
                 let workoutType = supportedWorkoutTypes[index]
-                Button(action: {
-                    selectedWorkoutType = workoutType
-                    showConfigurationSheet = true
-                }, label: {
-                    Text(workoutType.string)
-                        .font(.title2)
-                })
+                WorkoutTypeButton(workoutType: workoutType)
             }
         }
-        .sheet(isPresented: $showConfigurationSheet, content:  {
-            VStack(alignment: .leading, spacing: 8) {
-                if let selectedWorkoutType {
-                    if selectedWorkoutType == .swimming {
-                        List {
-                            Picker(selection: $swimLocation, content: {
-                                Text("Открытая вода")
-                                    .tag(HKWorkoutSwimmingLocationType.openWater)
-                                Text("Бассейн")
-                                    .tag(HKWorkoutSwimmingLocationType.pool)
-                            }, label: {
-                                Text("Локация плавания")
-                            })
-                        }
-                        .frame(height: 56)
-                        .scrollIndicators(.hidden)
-                        .scrollDisabled(true)
-                        
-                        HStack {
-                            Text("Длина дорожки (м)")
-                                .padding(.leading, 4)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.7)
-                            TextField("", value: $lapLength, format: .number)
-                        }
-                    } else {
-                        Form {
-                            Picker(selection: $activityLocation, content: {
-                                Text("В помещении")
-                                    .tag(HKWorkoutSessionLocationType.indoor)
-                                Text("На улице")
-                                    .tag(HKWorkoutSessionLocationType.outdoor)
-                            }, label: {
-                                Text("Локация активности")
-                            })
-                        }
-                    }
-                    
-                    if let error = workoutManager.error {
-                        Text(error.message)
-                            .foregroundStyle(Color.fitnessRedMain)
-                            .padding(.leading, 4)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                    }
-                    
-                    HStack(spacing: 8) {
-                        Button(action: {
-                            showConfigurationSheet = false
-                        }, label: {
-                            Text("Отмена")
-                                .font(.title3)
-                                .foregroundStyle(.white)
-                                .padding(.all, 4)
-                                .background(Capsule().fill(Color.fitnessRedMain))
-                                .contentShape(Rectangle())
-                        })
-                        
-                        Button(action: {
-                            Task {
-                                let configuration = HKWorkoutConfiguration()
-                                configuration.activityType = selectedWorkoutType
-                                if selectedWorkoutType == .swimming {
-                                    configuration.swimmingLocationType = swimLocation
-                                    configuration.lapLength = HKQuantity(unit: HKUnit.meter(), doubleValue: Double(lapLength))
-                                } else {
-                                    configuration.locationType = activityLocation
-                                }
-                                await workoutManager.startWorkout(with: configuration)
-                                showConfigurationSheet = false
-                            }
-                        }, label: {
-                            Text("Начать")
-                                .font(.title3)
-                                .foregroundStyle(.white)
-                                .padding(.all, 4)
-                                .background(Capsule().fill(Color.fitnessGreenMain))
-                                .contentShape(Rectangle())
-                        })
-                    }
-                    .padding(.trailing, 4)
-                    .fontWeight(.semibold)
-                    .buttonStyle(.plain)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                }
-            }
-            .font(.system(size: 12))
-            .frame(maxHeight: .infinity, alignment: .top)
-            .toolbarVisibility(.hidden, for: .navigationBar)
-            .interactiveDismissDisabled()
+        .sheet(isPresented: $vm.showConfigurationSheet, content:  {
+            WorkoutCongirurationSheet()
         })
-        .onChange(of: showConfigurationSheet, {
-            if !showConfigurationSheet {
-                selectedWorkoutType = nil
+        .onChange(of: vm.showConfigurationSheet, {
+            if !vm.showConfigurationSheet {
+                vm.selectedWorkoutType = nil
             }
         })
         .onAppear {
@@ -151,7 +52,109 @@ struct NewWorkoutView: View {
         }
     }
     
+    @ViewBuilder
+    func WorkoutTypeButton(workoutType: HKWorkoutActivityType) -> some View {
+        Button(action: {
+            vm.selectedWorkoutType = workoutType
+            vm.showConfigurationSheet = true
+        }, label: {
+            Text(workoutType.string)
+                .font(.title2)
+        })
+    }
     
+    @ViewBuilder
+    func WorkoutCongirurationSheet() -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let selectedWorkoutType = vm.selectedWorkoutType {
+                if selectedWorkoutType == .swimming {
+                    List {
+                        Picker(selection: $vm.swimLocation, content: {
+                            Text("Открытая вода")
+                                .tag(HKWorkoutSwimmingLocationType.openWater)
+                            Text("Бассейн")
+                                .tag(HKWorkoutSwimmingLocationType.pool)
+                        }, label: {
+                            Text("Локация плавания")
+                        })
+                    }
+                    .frame(height: 56)
+                    .scrollIndicators(.hidden)
+                    .scrollDisabled(true)
+                    
+                    HStack {
+                        Text("Длина дорожки (м)")
+                            .padding(.leading, 4)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                        TextField("", value: $vm.lapLength, format: .number)
+                    }
+                } else {
+                    Form {
+                        Picker(selection: $vm.activityLocation, content: {
+                            Text("В помещении")
+                                .tag(HKWorkoutSessionLocationType.indoor)
+                            Text("На улице")
+                                .tag(HKWorkoutSessionLocationType.outdoor)
+                        }, label: {
+                            Text("Локация активности")
+                        })
+                    }
+                }
+                
+                if let error = workoutManager.error {
+                    Text(error.message)
+                        .foregroundStyle(Color.fitnessRedMain)
+                        .padding(.leading, 4)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
+                
+                HStack(spacing: 8) {
+                    Button(action: {
+                        vm.showConfigurationSheet = false
+                    }, label: {
+                        Text("Отмена")
+                            .font(.title3)
+                            .foregroundStyle(.white)
+                            .padding(.all, 4)
+                            .background(Capsule().fill(Color.fitnessRedMain))
+                            .contentShape(Rectangle())
+                    })
+                    
+                    Button(action: {
+                        Task {
+                            let configuration = HKWorkoutConfiguration()
+                            configuration.activityType = selectedWorkoutType
+                            if selectedWorkoutType == .swimming {
+                                configuration.swimmingLocationType = vm.swimLocation
+                                configuration.lapLength = HKQuantity(unit: HKUnit.meter(), doubleValue: Double(vm.lapLength))
+                            } else {
+                                configuration.locationType = vm.activityLocation
+                            }
+                            await workoutManager.startWorkout(with: configuration)
+                            vm.showConfigurationSheet = false
+                        }
+                    }, label: {
+                        Text("Начать")
+                            .font(.title3)
+                            .foregroundStyle(.white)
+                            .padding(.all, 4)
+                            .background(Capsule().fill(Color.fitnessGreenMain))
+                            .contentShape(Rectangle())
+                    })
+                }
+                .padding(.trailing, 4)
+                .fontWeight(.semibold)
+                .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+        }
+        .font(.system(size: 12))
+        .frame(maxHeight: .infinity, alignment: .top)
+        .toolbarVisibility(.hidden, for: .navigationBar)
+        .interactiveDismissDisabled()
+    }
 }
 
 #Preview {

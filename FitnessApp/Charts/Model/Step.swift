@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Step: Identifiable {
+protocol Step: Identifiable, Equatable {
     var id: UUID { get }
     var date: Date { get set }
     var count: Int { get set }

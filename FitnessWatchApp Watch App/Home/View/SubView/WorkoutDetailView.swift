@@ -56,7 +56,7 @@ struct WorkoutDetailView: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 5) {
                             if !workout.averageHeartRate.contains("-") {
-                                WorkoutDetailRow(iconName: "heart", iconColor: .green, text: workout.averageHeartRate)
+                                WorkoutDetailRow(iconName: "heart", iconColor: Color.fitnessGreenMain, text: workout.averageHeartRate)
                             }
                             if !workout.pace.contains("-") {
                                 WorkoutDetailRow(iconName: "speedometer", iconColor: .orange, text: workout.pace)

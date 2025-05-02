@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LeaderboardUser: Codable, Identifiable {
+struct LeaderboardUser: Codable, Identifiable, Equatable {
     var id = UUID()
     let username: String
     let count: Int

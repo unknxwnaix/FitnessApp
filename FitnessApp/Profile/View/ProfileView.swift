@@ -173,7 +173,7 @@ struct ProfileHeaderView: View {
             VStack(alignment: .leading) {
                 Text(vm.greeting)
                     .font(.title)
-                    .foregroundStyle(.white.opacity(0.6))
+                    .foregroundStyle(.secondary)
                 Text(vm.name)
                     .font(.largeTitle)
                     .fontDesign(.rounded)
@@ -230,7 +230,7 @@ struct AvatarEditView: View {
                         .frame(width: 40, height: 40)
                         .overlay(
                             Circle()
-                                .stroke(Color.white, lineWidth: vm.selectedBackgroundColor == color ? 3 : 0)
+                                .stroke(vm.selectedBackgroundColor == color ? Color.fitnessGreenMain : .black, lineWidth: vm.selectedBackgroundColor == color ? 3 : 0.5)
                         )
                         .onTapGesture {
                             withAnimation {
@@ -252,7 +252,7 @@ struct AvatarEditView: View {
                         .frame(width: 50, height: 50)
                         .background(
                             Circle()
-                                .fill(vm.selectedEmoji == emoji ? .green.opacity(0.3) : Color.clear)
+                                .fill(vm.selectedEmoji == emoji ? Color.fitnessGreenMain.opacity(0.3) : Color.clear)
                         )
                         .onTapGesture {
                             withAnimation {

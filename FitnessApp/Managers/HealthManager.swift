@@ -7,6 +7,7 @@
 
 import Foundation
 import HealthKit
+import SwiftUICore
 
 class HealthManager {
     
@@ -95,7 +96,7 @@ class HealthManager {
             }
             
             let steps = quantity.doubleValue(for: .count())
-            let activity = FitnessActivity(title: "Today Steps", subtitle: "Goal: 10000", image: "figure.walk", tintColor: .green, amount: steps.formattedNumberString())
+            let activity = FitnessActivity(title: "Today Steps", subtitle: "Goal: 10000", image: "figure.walk", tintColor: Color.fitnessGreenMain, amount: steps.formattedNumberString())
             completion(.success(activity))
         }
         
@@ -146,7 +147,7 @@ class HealthManager {
     
     func generateActivitiesFromDurations(running: Int, strenth: Int, soccer: Int, basketball: Int, stairs: Int, walking: Int) -> [FitnessActivity] {
         return [
-            FitnessActivity(title: "Ходьба", subtitle: "На этой неделе", image: "figure.walk", tintColor: .green, amount: "\(walking) мин"),
+            FitnessActivity(title: "Ходьба", subtitle: "На этой неделе", image: "figure.walk", tintColor: Color.fitnessGreenMain, amount: "\(walking) мин"),
             FitnessActivity(title: "Бег", subtitle: "На этой неделе", image: "figure.run", tintColor: .teal, amount: "\(running) мин"),
             FitnessActivity(title: "Силовые", subtitle: "На этой неделе", image: "dumbbell", tintColor: .blue, amount: "\(strenth) мин"),
             FitnessActivity(title: "Футбол", subtitle: "На этой неделе", image: "figure.soccer", tintColor: .indigo, amount: "\(soccer) мин"),

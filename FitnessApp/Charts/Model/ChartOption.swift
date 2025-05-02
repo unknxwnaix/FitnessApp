@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ChartOptions: String, CaseIterable {
+enum ChartOption: String, CaseIterable {
     case oneWeek = "1Н"
     case oneMonth = "1М"
     case threeMonths = "3M"

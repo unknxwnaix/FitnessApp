@@ -14,87 +14,125 @@ struct LeaderboardView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                HStack {
-                    Text("Имя")
-                        .bold()
+            if vm.isLoading {
+                CustomProgressView()
+            } else {
+                VStack {
+                    TableHeader()
                     
-                    Spacer() 
+                    LazyVStack(spacing: 8) {
+                        ForEach(Array(vm.leaderResult.top10.enumerated()), id: \.element.id) { (index, person) in
+                            TableUserRow(index: index, person: person)
+                        }
+//                        ForEach(Array(vm.mockData.enumerated()), id: \.element.id) { (index, person) in
+//                            TableUserRow(index: index, person: person)
+//                        }
+                    }
                     
-                    Text("Шаги")
-                        .bold()
-                }
-                .padding()
-                
-                LazyVStack(spacing: 16) {
-                    ForEach(Array(vm.leaderResult.top10.enumerated()), id: \.element.id) { (index, person) in
+                    Image(systemName: "ellipsis")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 48, height: 48)
+                        .foregroundStyle(.gray.opacity(0.5))
+                    
+                    if let user = vm.leaderResult.user {
                         HStack {
-                            Text("\(index + 1).")
-                                
-                            Text(person.username)
+                            Text("--")
+                                .font(.headline.bold())
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.primary)
                             
-                            if username == person.username {
-                                Image(systemName: "crown.fill")
-                                    .foregroundStyle(.yellow)
-                            }
+                            Text(user.username)
                             
                             Spacer()
                             
-                            Text("\(person.count)")
+                            Text("\(user.count)")
                         }
-                        .padding(.horizontal)
+                        .padding(12)
+                        .background(RoundedRectangle(cornerRadius: 8)
+                            .fill(.gray.opacity(0.2))
+                        )
+                        .padding(.horizontal, 5)
                     }
+                    
+                    Spacer()
                 }
-                
-                Image(systemName: "ellipsis")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 48, height: 48)
-                    .foregroundStyle(.gray.opacity(0.5))
-                
-                if let user = vm.leaderResult.user {
-                    HStack {
-                        Text("-")
-                            
-                        Text(user.username)
-                        
-                        Spacer()
-                        
-                        Text("\(user.count)")
-                    }
-                    .padding(.horizontal)
+                .navigationTitle("Таблица лидеров")
+                .fullScreenCover(isPresented: $showTerms) {
+                    TermsView()
                 }
-                
-                Spacer()
-            }
-            .navigationTitle("Таблица лидеров")
-            .fullScreenCover(isPresented: $showTerms) {
-                TermsView()
-            }
-            .onChange(of: showTerms) {
-                Task {
-                    do {
-                        if !showTerms && username != nil {
-                            try await vm.setupLeaderboardData()
-                        }
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                }
-            }
-            .onChange(of: username) { oldValue, newValue in
-                if username != nil {
+                .onChange(of: showTerms) {
                     Task {
                         do {
-                            try await vm.updateUsername(oldUsername: oldValue ?? "", newUsername: newValue ?? "")
-                            try await vm.setupLeaderboardData()
+                            if !showTerms && username != nil {
+                                try await vm.setupLeaderboardData()
+                            }
                         } catch {
                             print(error.localizedDescription)
                         }
                     }
                 }
+                .onChange(of: username) { oldValue, newValue in
+                    if username != nil {
+                        Task {
+                            do {
+                                try await vm.updateUsername(oldUsername: oldValue ?? "", newUsername: newValue ?? "")
+                                try await vm.setupLeaderboardData()
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                        }
+                    }
+                }
+                .onChange(of: vm.data) { _, newValue in
+                    withAnimation {
+                        vm.leaderResult = newValue
+                    }
+                }
             }
         }
+    }
+    
+    @ViewBuilder
+    func TableHeader() -> some View {
+        HStack {
+            Text("Имя")
+                .font(.title2.bold())
+            
+            Spacer()
+            
+            Text("Шаги")
+                .font(.title2.bold())
+        }
+        .padding(.horizontal)
+        .padding(.top)
+    }
+    
+    @ViewBuilder
+    func TableUserRow(index: Int, person: LeaderboardUser) -> some View {
+        //MARK: Index 0 = 1st place, 1 = 2nd place, 2 = 3rd place...
+        switch index + 1 {
+        case 1:
+            TableUserRowView(position: index + 1, person: person, tint: .yellow)
+        case 2:
+            TableUserRowView(position: index + 1, person: person, tint: .gray.opacity(0.8))
+        case 3:
+            TableUserRowView(position: index + 1, person: person, tint: .brown)
+        case _:
+            TableUserRowView(position: index + 1, person: person, tint: .gray.opacity(0.2))
+        }
+    }
+    
+    @ViewBuilder
+    func CustomProgressView() -> some View {
+        ProgressView()
+            .scaleEffect(2)
+            .tint(Color.fitnessGreenMain)
+            .padding(18)
+            .background {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.primary.opacity(0.2))
+            }
     }
 }
 

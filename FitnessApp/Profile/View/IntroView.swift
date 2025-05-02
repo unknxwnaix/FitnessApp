@@ -39,7 +39,7 @@ struct IntroView: View {
         }
         .background {
             Rectangle()
-                .fill(.green.gradient)
+                .fill(Color.fitnessGreenMain.gradient)
                 .ignoresSafeArea()
         }
     }
@@ -134,7 +134,7 @@ struct IntroView: View {
         } label: {
             Text(activePage != .page5 ? "Продолжить" : "Перейти к приложению")
                 .contentTransition(.identity)
-                .foregroundStyle(.green)
+                .foregroundStyle(Color.fitnessGreenMain)
                 .padding(.vertical, 15)
                 .frame(maxWidth: activePage == .page1 ? 220 : 180)
                 .background(.white, in: .capsule)

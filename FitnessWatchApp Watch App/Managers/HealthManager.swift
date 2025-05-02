@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import HealthKit
 
 class HealthManager {
@@ -194,7 +195,7 @@ class HealthManager {
             }
             
             let steps = quantity.doubleValue(for: .count())
-            let activity = Activity(title: "Шаги", subtitle: "Цель: 10000", image: "figure.highintensity.intervaltraining", tintColor: .green, amount: steps.formattedNumberString())
+            let activity = Activity(title: "Шаги", subtitle: "Цель: 10000", image: "figure.highintensity.intervaltraining", tintColor: Color.fitnessGreenMain, amount: steps.formattedNumberString())
             completion(.success(activity))
         }
         
@@ -247,7 +248,7 @@ class HealthManager {
         var activities: [Activity] = []
         
         if walking > 0 {
-            activities.append(Activity(title: "Ходьба", subtitle: "На этой неделе", image: "figure.walk", tintColor: .green, amount: "\(walking) мин"))
+            activities.append(Activity(title: "Ходьба", subtitle: "На этой неделе", image: "figure.walk", tintColor: Color.fitnessGreenMain, amount: "\(walking) мин"))
         }
         
         if running > 0 {
@@ -335,7 +336,8 @@ class HealthManager {
             }
             
             group.notify(queue: .main) {
-                completion(.success(workoutDetails))
+                //MARK: return sorted Array of Workouts
+                completion(.success(workoutDetails.sorted(by: { $0.date > $1.date })))
             }
         }
         
@@ -412,119 +414,3 @@ class HealthManager {
         store.execute(query)
     }
 }
-
-////MARK: ChartsView Data
-//extension HealthManager {
-//    struct YearChartDataResult {
-//        let ytd: [MonthlyStepModel]
-//        let oneYear: [MonthlyStepModel]
-//    }
-//
-//    struct ThreeMonthChartDataResult {
-//        let oneWeek: [DailyStepModel]
-//        let oneMonth: [DailyStepModel]
-//        let threeMonths: [DailyStepModel]
-//    }
-//
-//    func fetchYTDAndOneYearData(completion: @escaping (Result<YearChartDataResult, Error>) -> Void ) {
-//        let steps = HKQuantityType(.stepCount)
-//        let calendar = Calendar.current
-//
-//        var oneYearMonth = [MonthlyStepModel]()
-//        var ytdMonth = [MonthlyStepModel]()
-//
-//        for i in 0...11 {
-//            let month = calendar.date(byAdding: .month, value: -i, to: Date()) ?? Date()
-//
-//            let (startOfMonth, endOfMonth) = month.fetchMonthStartAndEndDate()
-//            let predicate = HKQuery.predicateForSamples(withStart: startOfMonth, end: endOfMonth)
-//
-//            let query = HKStatisticsQuery(quantityType: steps, quantitySamplePredicate: predicate) { _, results, error in
-//                guard let count = results?.sumQuantity()?.doubleValue(for: .count() ), error == nil else {
-//                    completion(.failure(URLError(.badURL)))
-//                    return
-//                }
-//
-//                if i == 0 {
-//                    oneYearMonth.append(MonthlyStepModel(date: month, count: Int(count)))
-//                    ytdMonth.append(MonthlyStepModel(date: month, count: Int(count)))
-//                } else {
-//                    oneYearMonth.append(MonthlyStepModel(date: month, count: Int(count)))
-//
-//                    if calendar.component(.year, from: Date()) == calendar.component(.year, from: month) {
-//                        ytdMonth.append(MonthlyStepModel(date: month, count: Int(count)))
-//                    }
-//                }
-//
-//                if i == 11 {
-//                    completion(.success(YearChartDataResult(ytd: ytdMonth, oneYear: oneYearMonth)) )
-//                }
-//            }
-//
-//            store.execute(query)
-//        }
-//    }
-//
-//    func fetchThreeMonthStepData(completion: @escaping (Result<ThreeMonthChartDataResult, Error>) -> Void) {
-//        let steps = HKQuantityType(.stepCount)
-//        let calendar = Calendar.current
-//
-//        var weekSteps = [DailyStepModel]()
-//        var monthSteps = [DailyStepModel]()
-//        var threeMonthSteps = [DailyStepModel]()
-//
-//        let now = Date()
-//
-//        for i in 0..<90 {
-//            guard let day = calendar.date(byAdding: .day, value: -i, to: now) else { continue }
-//            let startOfDay = calendar.startOfDay(for: day)
-//            let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
-//
-//            let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: endOfDay)
-//
-//            let query = HKStatisticsQuery(quantityType: steps, quantitySamplePredicate: predicate) { _, results, error in
-//                guard let count = results?.sumQuantity()?.doubleValue(for: .count()), error == nil else {
-//                    completion(.failure(URLError(.badURL)))
-//                    return
-//                }
-//
-//                let stepModel = DailyStepModel(date: startOfDay, count: Int(count))
-//
-//                if i < 7 {
-//                    weekSteps.append(stepModel)
-//                }
-//                if i < 30 {
-//                    monthSteps.append(stepModel)
-//                }
-//                threeMonthSteps.append(stepModel)
-//
-//                if i == 89 {
-//                    completion(.success(ThreeMonthChartDataResult(oneWeek: weekSteps, oneMonth: monthSteps, threeMonths: threeMonthSteps)))
-//                }
-//            }
-//
-//            store.execute(query)
-//        }
-//    }
-//}
-
-//MARK: Leaderboard View
-extension HealthManager {
-    func fetchCurrentWeekStepCount(completion: @escaping (Result<Double, Error>) -> Void) {
-        let steps = HKQuantityType(.stepCount)
-        let predicate = HKQuery.predicateForSamples(withStart: .startOfWeek, end: Date())
-        let query = HKStatisticsQuery(quantityType: steps, quantitySamplePredicate: predicate) { _, results, error in
-            guard let quantity = results?.sumQuantity(), error == nil else {
-                completion(.failure(URLError(.badURL)))
-                return
-            }
-            
-            let steps = quantity.doubleValue(for: .count())
-            
-            completion(.success(steps))
-        }
-        
-        store.execute(query)
-    }
-}
-

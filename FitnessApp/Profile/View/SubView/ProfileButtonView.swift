@@ -35,5 +35,5 @@ struct ProfileButtonView: View {
 }
 
 #Preview {
-    ProfileButtonView(title: "О нас", image: "house", color: .green, action: {})
+    ProfileButtonView(title: "О нас", image: "house", color: Color.fitnessGreenMain, action: {})
 }

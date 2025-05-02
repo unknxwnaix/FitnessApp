@@ -30,7 +30,7 @@ class HomeViewModel: ObservableObject {
         Workout(
             title: "Running",
             image: "figure.run",
-            tintColor: .green,
+            tintColor: Color.fitnessGreenMain,
             duration: "47 mins",
             date: "Aug 19",
             calories: "502 kcal"

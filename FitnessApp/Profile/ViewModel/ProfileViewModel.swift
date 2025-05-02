@@ -25,8 +25,8 @@ class ProfileViewModel: ObservableObject {
     @Published var showIntro: Bool = false
 
     let colorOptions: [Color] = [
-        .red, .orange, .yellow, .green, .mint, .teal, .cyan, .blue, .indigo, .purple,
-        .pink, .brown, .gray, .black, .white, .red.opacity(0.5), .blue.opacity(0.5), .green.opacity(0.5), .orange.opacity(0.5), .purple.opacity(0.5)
+        .red, .orange, .yellow, Color.fitnessGreenMain, .mint, .teal, .cyan, .blue, .indigo, .purple,
+        .pink, .brown, .gray, .black, .white, .red.opacity(0.5), .blue.opacity(0.5), Color.fitnessGreenMain.opacity(0.5), .orange.opacity(0.5), .purple.opacity(0.5)
     ]
     
     let emojiOptions: [String] = [

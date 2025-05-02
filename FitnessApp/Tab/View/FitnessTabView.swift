@@ -84,7 +84,7 @@ struct FitnessTabView: View {
                         .font(.caption2)
                         .textScale(.secondary)
                 }
-                .foregroundStyle(selectedTab == tab ? .green : .secondary)
+                .foregroundStyle(selectedTab == tab ? Color.fitnessGreenMain : .secondary)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 15)
                 .padding(.bottom, 10)

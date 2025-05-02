@@ -11,6 +11,7 @@ import Charts
 struct ChartDataView: View {
     @State var chartData: ChartData
     @State private var rawSelectedDate: Date?
+    @State private var isChartVisible = false
     
     var selectedStep: (any Step)? {
         guard let rawSelectedDate else { return nil }
@@ -22,47 +23,12 @@ struct ChartDataView: View {
     
     var body: some View {
         VStack {
-            HStack {
-                Spacer()
-                
-                VStack(spacing: 16) {
-                    Text("Среднее")
-                        .font(.title2)
-                    
-                    Text("\(chartData.average)")
-                        .font(.title3)
-                }
-                .foregroundStyle(.white)
-                .frame(width: 90, height: 65)
-                .padding()
-                .background(.gray.opacity(0.15))
-                .cornerRadius(15)
-                .frame(width: 90, height: 65)
-                
-                Spacer()
-                
-                VStack(spacing: 16) {
-                    Text("Всего")
-                        .font(.title2)
-                    
-                    Text("\(chartData.total)")
-                        .font(.title3)
-                }
-                .foregroundStyle(.white)
-                .frame(width: 90, height: 65)
-                .padding()
-                .background(.gray.opacity(0.15))
-                .cornerRadius(15)
-                
-                
-                Spacer()
-            }
-            .opacity(rawSelectedDate == nil ? 1 : 0)
+            HeaderView()
             
             Chart {
                 if let selectedStep {
                     RuleMark(x: .value("Selected Date", selectedStep.date, unit: chartData.unit))
-                        .foregroundStyle(.green.opacity(0.3))
+                        .foregroundStyle(Color.fitnessGreenMain.opacity(0.3))
                         .annotation(position: .top,  overflowResolution: .init(x: .fit(to: .plot), y: .disabled)) {
                             VStack(spacing: 10) {
                                 Text("\(Date.formattedDate(from: selectedStep.date, unit: chartData.unit))")
@@ -77,14 +43,14 @@ struct ChartDataView: View {
                             .padding(12)
                             .frame(width: 200, height: 105)
                             .background(RoundedRectangle(cornerRadius: 12)
-                                .fill(.green.gradient)
+                                .fill(Color.fitnessGreenMain.gradient)
                             )
                         }
                 }
                 
                 ForEach(chartData.data, id: \.id) { data  in
-                    BarMark(x: .value(data.date.formatted(), data.date, unit: chartData.unit), y: .value("Steps", data.count ))
-                        .foregroundStyle(.green)
+                    BarMark(x: .value(data.date.formatted(), data.date, unit: chartData.unit), y: .value("Steps", data.count))
+                        .foregroundStyle(Color.fitnessGreenMain)
                         .opacity(rawSelectedDate == nil || data.date == selectedStep?.date ? 0.9 : 0.3)
                 }
                 
@@ -102,7 +68,54 @@ struct ChartDataView: View {
                     .foregroundStyle(.gray)
             }
             .chartXSelection(value: $rawSelectedDate.animation(.easeInOut))
+            .opacity(isChartVisible ? 1 : 0)
+            .offset(y: isChartVisible ? 0 : 20)
+            .onAppear {
+                withAnimation(.spring(response: 0.8, dampingFraction: 0.7)) {
+                    isChartVisible = true
+                }
+            }
         }
+    }
+    
+    @ViewBuilder
+    func HeaderView() -> some View {
+        HStack {
+            Spacer()
+            
+            VStack(spacing: 16) {
+                Text("Среднее")
+                    .font(.title2)
+                
+                Text("\(chartData.average)")
+                    .font(.title3)
+            }
+            .foregroundStyle(.white)
+            .frame(width: 90, height: 65)
+            .padding()
+            .background(.gray.opacity(0.15))
+            .cornerRadius(15)
+            .frame(width: 90, height: 65)
+            
+            Spacer()
+            
+            VStack(spacing: 16) {
+                Text("Всего")
+                    .font(.title2)
+                
+                Text("\(chartData.total)")
+                    .font(.title3)
+            }
+            .foregroundStyle(.white)
+            .frame(width: 90, height: 65)
+            .padding()
+            .background(.gray.opacity(0.15))
+            .cornerRadius(15)
+            
+            
+            Spacer()
+        }
+        .opacity(rawSelectedDate == nil ? 1 : 0)
     }
 }
 
