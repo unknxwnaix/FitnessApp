@@ -1,6 +1,5 @@
 import Foundation
 import WatchConnectivity
-import ActivityKit
 
 @MainActor
 class WatchConnectivityManager: NSObject, ObservableObject {
@@ -8,7 +7,6 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     
     @Published var isWorkoutActive = false
     @Published var workoutData: [String: Any] = [:]
-    private var liveActivity: Activity<WorkoutAttributes>?
     
     private override init() {
         super.init()
@@ -19,91 +17,6 @@ class WatchConnectivityManager: NSObject, ObservableObject {
             print("🟢 Watch: Session is reachable: \(WCSession.default.isReachable)")
         } else {
             print("🔴 Watch: WCSession is not supported")
-        }
-    }
-    
-    private func startLiveActivity(with data: [String: Any]) {
-        print("🟢 Starting Live Activity with data: \(data)")
-        
-        let attributes = WorkoutAttributes(
-            workoutType: data["workoutType"] as? String ?? "Unknown",
-            startTime: data["startTime"] as? Date ?? Date()
-        )
-        
-        let contentState = WorkoutAttributes.ContentState(
-            heartRate: data["heartRate"] as? Double ?? 0,
-            calories: data["calories"] as? Double ?? 0,
-            distance: data["distance"] as? Double ?? 0,
-            duration: data["duration"] as? TimeInterval ?? 0
-        )
-        
-        do {
-            if ActivityAuthorizationInfo().areActivitiesEnabled {
-                let activityContent = ActivityContent(
-                    state: contentState,
-                    staleDate: nil
-                )
-                
-                let activity = try Activity<WorkoutAttributes>.request(
-                    attributes: attributes,
-                    content: activityContent
-                )
-                
-                print("🟢 Live Activity started with ID: \(activity.id)")
-                liveActivity = activity
-            } else {
-                print("🔴 Live Activities are not enabled")
-            }
-        } catch {
-            print("🔴 Error starting Live Activity: \(error.localizedDescription)")
-        }
-    }
-    
-    private func updateLiveActivity(with data: [String: Any]) {
-        print("🟢 Updating Live Activity with data: \(data)")
-        
-        guard let liveActivity = liveActivity else {
-            print("🔴 No active Live Activity to update")
-            return
-        }
-        
-        let contentState = WorkoutAttributes.ContentState(
-            heartRate: data["heartRate"] as? Double ?? 0,
-            calories: data["calories"] as? Double ?? 0,
-            distance: data["distance"] as? Double ?? 0,
-            duration: data["duration"] as? TimeInterval ?? 0
-        )
-        
-        let activityContent = ActivityContent(
-            state: contentState,
-            staleDate: nil
-        )
-        
-        Task {
-            do {
-                try await liveActivity.update(activityContent)
-                print("🟢 Live Activity updated successfully")
-            } catch {
-                print("🔴 Error updating Live Activity: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    private func endLiveActivity() {
-        print("🟢 Ending Live Activity")
-        
-        guard let liveActivity = liveActivity else {
-            print("🔴 No active Live Activity to end")
-            return
-        }
-        
-        Task {
-            do {
-                try await liveActivity.end(dismissalPolicy: ActivityUIDismissalPolicy.immediate)
-                print("🟢 Live Activity ended successfully")
-            } catch {
-                print("🔴 Error ending Live Activity: \(error.localizedDescription)")
-            }
         }
     }
     
@@ -154,20 +67,22 @@ extension WatchConnectivityManager: WCSessionDelegate {
                 print("🟢 Workout ended notification received")
                 self.isWorkoutActive = false
                 self.workoutData = [:]
-                self.endLiveActivity()
+                LiveActivityManager.shared.endLiveActivity()
                 return
             }
             
             print("🟢 New workout data received")
             self.isWorkoutActive = true
+            
+            let wasEmpty = self.workoutData.isEmpty
             self.workoutData = applicationContext
             
-            if self.liveActivity == nil {
+            if wasEmpty {
                 print("🟢 Starting new Live Activity")
-                self.startLiveActivity(with: applicationContext)
+                LiveActivityManager.shared.startLiveActivity(with: applicationContext)
             } else {
                 print("🟢 Updating existing Live Activity")
-                self.updateLiveActivity(with: applicationContext)
+                LiveActivityManager.shared.updateLiveActivity(with: applicationContext)
             }
         }
     }

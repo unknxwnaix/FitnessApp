@@ -18,7 +18,7 @@ struct TrainingActivityWIdget: Widget {
                 
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text(context.attributes.workoutType)
+                        Label("\(context.attributes.workoutType)", systemImage: context.attributes.workoutImageName)
                             .font(.headline)
                         
                         Spacer()

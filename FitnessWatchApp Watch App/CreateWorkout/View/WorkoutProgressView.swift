@@ -11,6 +11,7 @@ import HealthKit
 struct WorkoutProgressView: View {
     @Environment(WorkoutManager.self) private var workoutManager
     @StateObject private var vm: WorkoutProgressViewModel
+    @Environment(\.dismiss) private var dismiss
 
     init() {
         _vm = StateObject(wrappedValue: WorkoutProgressViewModel(workoutManager: WorkoutManager()))
@@ -75,6 +76,13 @@ struct WorkoutProgressView: View {
         }
         .onDisappear {
             workoutManager.error = nil
+        }
+        .onChange(of: workoutManager.workoutResult) { _, newValue in
+            if newValue != nil {
+                // Переходим к сводке тренировки
+                vm.showProgressView = false
+                dismiss()
+            }
         }
     }
     
@@ -239,8 +247,13 @@ struct WorkoutProgressView: View {
             .tint(.fitnessGreenMain)
             
             Button(action: {
-                workoutManager.endSession()
-                vm.showProgressView = true
+                Task {
+                    await workoutManager.endSession()
+                    vm.showProgressView = true
+                    // Ждем завершения тренировки и сбрасываем индикатор
+                    try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 секунда
+                    vm.showProgressView = false
+                }
             }, label: {
                 Image(systemName: "stop.fill")
                     .frame(width: 32, height: 32)

@@ -10,5 +10,6 @@ struct WorkoutAttributes: ActivityAttributes {
     }
     
     var workoutType: String
+    var workoutImageName: String
     var startTime: Date
 }

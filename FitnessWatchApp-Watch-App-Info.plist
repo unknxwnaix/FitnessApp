@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict/>
+<dict>
+    <key>NSHealthShareUsageDescription</key>
+    <string>We need access to your health data to track your workouts</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>We need access to update your health data with workout information</string>
+    <key>WKBackgroundModes</key>
+    <array>
+        <string>workout-processing</string>
+    </array>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>remote-notification</string>
+    </array>
+    <key>CFBundleIdentifier</key>
+    <string>com.aiXCodes.FitnessApp.watchkitapp</string>
+</dict>
 </plist>

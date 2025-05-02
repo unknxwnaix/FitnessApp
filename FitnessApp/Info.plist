@@ -6,5 +6,9 @@
 	<true/>
 	<key>NSWidgetHost</key>
 	<true/>
+	<key>CFBundleIdentifier</key>
+	<string>com.aiXCodes.FitnessApp</string>
+	<key>NSWidgetBundleIdentifier</key>
+	<string>com.aiXCodes.FitnessApp.TrainingWidget</string>
 </dict>
 </plist>

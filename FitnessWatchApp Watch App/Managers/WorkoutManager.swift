@@ -58,12 +58,27 @@ class WorkoutManager: NSObject {
         }
     }
     
-    enum WorkoutType: String {
+    enum WorkoutType: String, CaseIterable {
         case walking = "Прогулка"
         case running = "Бег"
         case cycling = "Велосипед"
         case swimming = "Плавание"
         case hiit = "Интервальная тренировка"
+        
+        var imageName: String {
+            switch self {
+            case .walking:
+                return "figure.walk"
+            case .running:
+                return "figure.run"
+            case .cycling:
+                return "bicycle"
+            case .swimming:
+                return "figure.pool.swim"
+            case .hiit:
+                return "flame"
+            }
+        }
     }
     
     // after session end
@@ -351,10 +366,8 @@ extension WorkoutManager {
     nonisolated private func updateMetrics(_ statistics: HKStatistics?) {
         guard let statistics else { return }
 
-//        print("update metrics for \(statistics.quantityType.identifier)")
         DispatchQueue.main.async {
             switch statistics.quantityType {
-                
             case HKQuantityType(.heartRate):
                 self.workoutMetrics?.heartRate = statistics.heartRate
                 self.workoutMetrics?.averageHeartRate = statistics.averageHeartRate
@@ -371,18 +384,36 @@ extension WorkoutManager {
                 HKQuantityType(.runningSpeed):
                 self.workoutMetrics?.speed = statistics.speed
                 self.workoutMetrics?.averageSpeed = statistics.averageSpeed
-
                 
             case HKQuantityType(.swimmingStrokeCount):
                 self.workoutMetrics?.stepStrokeCount = statistics.strokeCount
-           
+            
             case HKQuantityType(.stepCount):
                 self.workoutMetrics?.stepStrokeCount = statistics.stepCount
 
             default:
                 return
             }
+            
+            // Отправляем обновленные данные на телефон
+            self.sendWorkoutUpdate()
         }
+    }
+    
+    private func sendWorkoutUpdate() {
+        guard let workoutType = workoutType else { return }
+        
+        let data: [String: Any] = [
+            "workoutType": workoutType.rawValue,
+            "workoutImageName": workoutType.imageName,
+            "startTime": startTime,
+            "heartRate": workoutMetrics?.heartRate ?? 0,
+            "calories": workoutMetrics?.energyBurned ?? 0,
+            "distance": workoutMetrics?.distance ?? 0,
+            "duration": getElapseTime(at: Date())
+        ]
+        
+        watchConnectivityManager.sendWorkoutData(data)
     }
 }
 
@@ -584,20 +615,5 @@ extension WorkoutManager {
             self.error = .requestPermissionError(error)
             return false
         }
-    }
-    
-    private func sendWorkoutUpdate() {
-        guard let workoutType = workoutType else { return }
-        
-        let data: [String: Any] = [
-            "workoutType": workoutType.rawValue,
-            "startTime": startTime,
-            "heartRate": heartRate,
-            "calories": calories,
-            "distance": distance,
-            "duration": duration
-        ]
-        
-        watchConnectivityManager.sendWorkoutData(data)
     }
 }

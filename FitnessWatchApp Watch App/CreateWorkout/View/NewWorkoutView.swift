@@ -66,13 +66,8 @@ struct NewWorkoutView: View {
                 isLoading = true
                 defer { isLoading = false }
                 
-                do {
-                    vm.selectedWorkoutType = workoutType
-                    vm.showConfigurationSheet = true
-                } catch {
-                    print("Error starting workout: \(error.localizedDescription)")
-                    workoutManager.error = .startWorkoutFailed(error)
-                }
+                vm.selectedWorkoutType = workoutType
+                vm.showConfigurationSheet = true
             }
         }, label: {
             Text(workoutType.string)

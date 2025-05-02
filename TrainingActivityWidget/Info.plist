@@ -11,5 +11,9 @@
 	<true/>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>CFBundleIdentifier</key>
+	<string>com.aiXCodes.FitnessApp.TrainingWidget</string>
+	<key>NSExtensionMainStoryboard</key>
+	<string>MainInterface</string>
 </dict>
 </plist>
