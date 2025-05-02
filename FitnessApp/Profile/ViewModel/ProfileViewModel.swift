@@ -60,7 +60,7 @@ class ProfileViewModel: ObservableObject {
         }
     }
 
-    private func saveToStorage() {
+    func saveToStorage() {
         storedUsername = name
         storedEmoji = selectedEmoji
         storedColor = selectedBackgroundColor.toHex()

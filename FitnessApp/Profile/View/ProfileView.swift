@@ -235,6 +235,7 @@ struct AvatarEditView: View {
                         .onTapGesture {
                             withAnimation {
                                 vm.selectedBackgroundColor = color
+                                vm.saveToStorage()
                             }
                         }
                 }
@@ -257,6 +258,7 @@ struct AvatarEditView: View {
                         .onTapGesture {
                             withAnimation {
                                 vm.selectedEmoji = emoji
+                                vm.saveToStorage()
                             }
                         }
                 }
