@@ -15,12 +15,14 @@ class WorkoutViewModel: ObservableObject {
     
     @Published var workoutsDisplay = [WorkoutDetail]()
     
+    @Published var isLoading = true
+    
     init() {
         Task {
             do {
                 try await healthManager.requestHealthKitAccess()
                 fetchRecentWorkouts()
-                
+                isLoading = false
             } catch {
                 print(error.localizedDescription)
             }

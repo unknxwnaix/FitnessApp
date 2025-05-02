@@ -1,70 +1,19 @@
 //
-//  NewWorkoutView.swift
-//  ItsukiWorkoutApp
+//  WorkoutConfigurationSheetView.swift
+//  FitnessWatchApp Watch App
 //
-//  Created by Itsuki on 2025/03/02.
+//  Created by Maxim Dmitrochenko on 5/2/25.
 //
 
 import SwiftUI
 import HealthKit
 
-struct NewWorkoutView: View {
+struct WorkoutConfigurationSheetView: View {
+    @Bindable var vm: NewWorkoutViewModel
     @Environment(WorkoutManager.self) private var workoutManager
-    @State private var vm = NewWorkoutViewModel()
-
+    @State private var isLoading = false
+    
     var body: some View {
-        @Bindable var workoutManager = workoutManager
-        let supportedWorkoutTypes = Array(workoutManager.supportedWorkoutTypes)
-        List {
-            if let error = workoutManager.error {
-                Text(error.message)
-                    .foregroundStyle(Color.fitnessRedMain)
-            }
-            
-            ForEach(0..<supportedWorkoutTypes.count, id: \.self) { index in
-                let workoutType = supportedWorkoutTypes[index]
-                WorkoutTypeButton(workoutType: workoutType)
-            }
-        }
-        .sheet(isPresented: $vm.showConfigurationSheet, content:  {
-            WorkoutCongirurationSheet()
-        })
-        .onChange(of: vm.showConfigurationSheet, {
-            if !vm.showConfigurationSheet {
-                vm.selectedWorkoutType = nil
-            }
-        })
-        .onAppear {
-            workoutManager.error = nil
-        }
-        .onDisappear {
-            workoutManager.error = nil
-        }
-        .navigationTitle("Новая тренировка")
-        .navigationDestination(item: $workoutManager.workoutMetrics, destination: { _ in
-            WorkoutProgressView()
-                .environment(workoutManager)
-        })
-        .sheet(isPresented: $workoutManager.showResult) {
-            WorkoutResultView()
-                .environment(workoutManager)
-                .toolbarVisibility(.hidden, for: .navigationBar)
-        }
-    }
-    
-    @ViewBuilder
-    func WorkoutTypeButton(workoutType: HKWorkoutActivityType) -> some View {
-        Button(action: {
-            vm.selectedWorkoutType = workoutType
-            vm.showConfigurationSheet = true
-        }, label: {
-            Text(workoutType.string)
-                .font(.title2)
-        })
-    }
-    
-    @ViewBuilder
-    func WorkoutCongirurationSheet() -> some View {
         VStack(alignment: .leading, spacing: 8) {
             if let selectedWorkoutType = vm.selectedWorkoutType {
                 if selectedWorkoutType == .swimming {
@@ -77,6 +26,7 @@ struct NewWorkoutView: View {
                         }, label: {
                             Text("Локация плавания")
                         })
+                        .font(.caption2)
                     }
                     .frame(height: 56)
                     .scrollIndicators(.hidden)
@@ -88,9 +38,10 @@ struct NewWorkoutView: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
                         TextField("", value: $vm.lapLength, format: .number)
+                            .font(.caption2)
                     }
                 } else {
-                    Form {
+                    List {
                         Picker(selection: $vm.activityLocation, content: {
                             Text("В помещении")
                                 .tag(HKWorkoutSessionLocationType.indoor)
@@ -99,7 +50,10 @@ struct NewWorkoutView: View {
                         }, label: {
                             Text("Локация активности")
                         })
+                        .font(.caption2)
                     }
+                    .scrollIndicators(.hidden)
+                    .scrollDisabled(true)
                 }
                 
                 if let error = workoutManager.error {
@@ -110,9 +64,15 @@ struct NewWorkoutView: View {
                         .minimumScaleFactor(0.8)
                 }
                 
-                HStack(spacing: 8) {
+                Spacer(minLength: 0)
+                
+                HStack {
                     Button(action: {
                         vm.showConfigurationSheet = false
+                        vm.selectedWorkoutType = nil
+                        vm.activityLocation = .outdoor
+                        vm.swimLocation = .pool
+                        vm.lapLength = 400
                     }, label: {
                         Text("Отмена")
                             .font(.title3)
@@ -121,9 +81,15 @@ struct NewWorkoutView: View {
                             .background(Capsule().fill(Color.fitnessRedMain))
                             .contentShape(Rectangle())
                     })
+                    .disabled(isLoading)
+                    
+                    Spacer()
                     
                     Button(action: {
                         Task {
+                            isLoading = true
+                            defer { isLoading = false }
+                            
                             let configuration = HKWorkoutConfiguration()
                             configuration.activityType = selectedWorkoutType
                             if selectedWorkoutType == .swimming {
@@ -132,17 +98,27 @@ struct NewWorkoutView: View {
                             } else {
                                 configuration.locationType = vm.activityLocation
                             }
+                            
                             await workoutManager.startWorkout(with: configuration)
                             vm.showConfigurationSheet = false
                         }
                     }, label: {
-                        Text("Начать")
-                            .font(.title3)
-                            .foregroundStyle(.white)
-                            .padding(.all, 4)
-                            .background(Capsule().fill(Color.fitnessGreenMain))
-                            .contentShape(Rectangle())
+                        ZStack {
+                            if isLoading {
+                                ProgressView()
+                                    .tint(Color.fitnessGreenMain)
+                                    .frame(width: 10, height: 10)
+                            }
+                            Text("Начать")
+                                .opacity(isLoading ? 0 : 1)
+                        }
                     })
+                    .font(.title3)
+                    .foregroundStyle(.white)
+                    .padding(.all, 4)
+                    .background(Capsule().fill(Color.fitnessGreenMain.opacity(isLoading ? 0.35 : 1)))
+                    .contentShape(Rectangle())
+                    .disabled(isLoading)
                 }
                 .padding(.trailing, 4)
                 .fontWeight(.semibold)
@@ -157,16 +133,12 @@ struct NewWorkoutView: View {
     }
 }
 
+
 #Preview {
     let manager = WorkoutManager()
-    let configuration = HKWorkoutConfiguration()
-    configuration.activityType = .swimBikeRun
     
     return NavigationStack {
         NewWorkoutView()
             .environment(manager)
-            .onAppear {
-                manager.workoutMetrics = .init(workoutConfiguration: configuration)
-            }
     }
 }

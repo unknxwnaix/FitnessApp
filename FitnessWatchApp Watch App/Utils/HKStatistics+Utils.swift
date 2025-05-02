@@ -1,8 +1,8 @@
 //
 //  HKStatistic+Utils.swift
-//  ItsukiWorkoutApp
+//  FitnessApp
 //
-//  Created by Itsuki on 2025/03/03.
+//  Created by Maxim Dmitrochenko on 2025/03/03.
 //
 
 import HealthKit

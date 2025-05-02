@@ -10,12 +10,11 @@ import SwiftUI
 
 struct TrainingActivityWIdget: Widget {
     let kind: String = "TrainingActivityWIdget"
-
+    
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: WorkoutAttributes.self) { context in
             ZStack {
                 Color.fitnessGreenMain.opacity(0.4)
-                
                 
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
@@ -74,24 +73,50 @@ struct TrainingActivityWIdget: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Text("")
+                    Text(context.attributes.workoutType)
+                        .font(.headline)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text("")
+                    Text(formatDuration(context.state.duration))
+                        .font(.headline)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text("")
-                    // more content
+                    HStack(spacing: 20) {
+                        VStack {
+                            Text("\(Int(context.state.heartRate))")
+                                .font(.title3)
+                                .bold()
+                            Text("УД/МИН")
+                                .font(.caption2)
+                        }
+                        
+                        VStack {
+                            Text("\(Int(context.state.calories))")
+                                .font(.title3)
+                                .bold()
+                            Text("ККАЛ")
+                                .font(.caption2)
+                        }
+                        
+                        VStack {
+                            Text(formatDistance(context.state.distance))
+                                .font(.title3)
+                                .bold()
+                            Text("KM")
+                                .font(.caption2)
+                        }
+                    }
                 }
             } compactLeading: {
-                Text("")
+                Text(context.attributes.workoutType)
+                    .font(.caption)
             } compactTrailing: {
-                Text("")
+                Text(formatDuration(context.state.duration))
+                    .font(.caption)
             } minimal: {
-                Text("")
+                Text("\(Int(context.state.heartRate))")
+                    .font(.caption)
             }
-            .widgetURL(URL(string: "http://www.apple.com"))
-            .keylineTint(Color.red)
         }
     }
     

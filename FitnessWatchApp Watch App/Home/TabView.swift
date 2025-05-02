@@ -25,7 +25,6 @@ struct FitnessTabView: View {
                 .animation(.bouncy, value: selectedTab)
                 .tag("Workouts")
         }
-        .tabViewStyle(.carousel)
     }
 }
 

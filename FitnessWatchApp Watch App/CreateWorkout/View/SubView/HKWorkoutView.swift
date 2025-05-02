@@ -1,8 +1,8 @@
 //
 //  HKWorkoutView.swift
-//  ItsukiWorkoutApp
+//  FitnessApp
 //
-//  Created by Itsuki on 2025/03/04.
+//  Created by Maxim Dmitrochenko on 2025/03/04.
 //
 
 import SwiftUI

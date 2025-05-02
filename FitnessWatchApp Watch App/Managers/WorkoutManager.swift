@@ -1,8 +1,8 @@
 //
 //  WorkoutManager.swift
-//  ItsukiWorkoutApp
+//  FitnessApp
 //
-//  Created by Itsuki on 2025/03/02.
+//  Created by Maxim Dmitrochenko on 2025/03/02.
 //
 
 
@@ -97,137 +97,113 @@ class WorkoutManager: NSObject {
     // for iOS: use HKWorkoutBuilder instead.
 //    var builder: HKWorkoutBuilder?
 
+    private var isInitialized = false
     
     override init() {
         super.init()
+        Task { @MainActor in
+            await initialize()
+        }
+    }
+    
+    @MainActor
+    private func initialize() async {
+        guard !isInitialized else { return }
+        
         if HKHealthStore.isHealthDataAvailable() {
             self.healthStore = HKHealthStore()
-            Task {
-                await self.requestAuthorization()
+            do {
+                try await self.requestAuthorization()
+                print("🟢 WorkoutManager initialized successfully")
+                isInitialized = true
+            } catch {
+                print("🔴 WorkoutManager initialization failed: \(error.localizedDescription)")
+                self.error = .requestPermissionError(error)
             }
         } else {
+            print("🔴 HealthKit is not available")
             self.error = .unavailable
         }
     }
-}
-
-
-// MARK: - Permission related
-
-extension WorkoutManager {
-    private func checkAvailability() async -> Bool {
-        if !HKHealthStore.isHealthDataAvailable() {
-            self.error = .unavailable
-            return false
+    
+    @MainActor
+    func startWorkout(with configuration: HKWorkoutConfiguration) async {
+        print("🟢 Starting workout with configuration: \(configuration)")
+        
+        // Ensure we're initialized
+        if !isInitialized {
+            await initialize()
+            if !isInitialized {
+                print("🔴 WorkoutManager not initialized")
+                return
+            }
         }
         
         do {
-            let status = try await healthStore?.statusForAuthorizationRequest(toShare: typesToShare, read: [])
-            if status == .unnecessary {
-                return true
-            } else {
-                return await self.requestAuthorization()
+            let result = try await self.checkAvailability()
+            if !result {
+                print("🔴 Workout availability check failed")
+                return
             }
             
-        } catch(let error) {
-            self.error = .requestPermissionError(error)
-            return false
-        }
-    }
-    
-    private func requestAuthorization() async -> Bool  {
-        do {
-            try await healthStore?.requestAuthorization(toShare: typesToShare, read: [])
-            return true
-        } catch (let error) {
-            self.error = .requestPermissionError(error)
-            return false
-        }
-    }
-    
-}
+            guard let healthStore = healthStore else {
+                print("🔴 HealthStore is not available")
+                self.error = .unavailable
+                return
+            }
 
-
-// MARK: - Manage workout session/builder
-extension WorkoutManager {
-    
-    private func sendWorkoutUpdate() {
-        guard let workoutType = workoutType else { return }
-        
-        let workoutData: [String: Any] = [
-            "workoutType": workoutType.rawValue,
-            "startTime": startTime.timeIntervalSince1970,
-            "heartRate": heartRate,
-            "calories": calories,
-            "distance": distance,
-            "duration": duration
-        ]
-        
-        watchConnectivityManager.sendWorkoutData(workoutData)
-    }
-    
-    func startWorkout(with configuration: HKWorkoutConfiguration) async {
-        let result = await self.checkAvailability()
-        if !result {
-            return
-        }
-        guard let healthStore else {
-            self.error = .unavailable
-            return
-        }
-
-        if !self.supportedWorkoutTypes.contains(configuration.activityType) {
-            self.error = .workoutTypeNotSupported
-            return
-        }
-        
-        // Set workout type based on configuration
-        switch configuration.activityType {
-        case .walking:
-            workoutType = .walking
-        case .running:
-            workoutType = .running
-        case .cycling:
-            workoutType = .cycling
-        case .swimming:
-            workoutType = .swimming
-        case .highIntensityIntervalTraining:
-            workoutType = .hiit
-        default:
-            workoutType = nil
-        }
-        
-        do {
+            if !self.supportedWorkoutTypes.contains(configuration.activityType) {
+                print("🔴 Workout type not supported: \(configuration.activityType)")
+                self.error = .workoutTypeNotSupported
+                return
+            }
+            
+            // Set workout type based on configuration
+            switch configuration.activityType {
+            case .walking:
+                workoutType = .walking
+            case .running:
+                workoutType = .running
+            case .cycling:
+                workoutType = .cycling
+            case .swimming:
+                workoutType = .swimming
+            case .highIntensityIntervalTraining:
+                workoutType = .hiit
+            default:
+                workoutType = nil
+            }
+            
+            print("🟢 Creating workout session...")
             session = try HKWorkoutSession(healthStore: healthStore, configuration: configuration)
             builder = session?.associatedWorkoutBuilder()
-        } catch(let error) {
-            self.error = .startWorkoutFailed(error)
-            return
-        }
-
-        
-        builder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: configuration)
-
-        //        print("types to collect: ", builder?.dataSource?.typesToCollect as Any)
-        
-        // to enable additional types to collect, ex: respiratoryRate
-        // builder?.dataSource?.enableCollection(for: HKQuantityType(.respiratoryRate), predicate: nil)
-
-        // To monitor session and builder updates
-        session?.delegate = self
-        builder?.delegate = self
-        
-        // start activity
-        let date = Date()
-
-        session?.startActivity(with: date)
-
-        do {
-            try await builder?.beginCollection(at: date)
+            
+            guard let session = session, let builder = builder else {
+                print("🔴 Failed to create workout session or builder")
+                self.error = .startWorkoutFailed(NSError(domain: "WorkoutManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to create workout session or builder"]))
+                return
+            }
+            
+            print("🟢 Setting up data source...")
+            builder.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: configuration)
+            
+            print("🟢 Setting up delegates...")
+            session.delegate = self
+            builder.delegate = self
+            
+            print("🟢 Starting activity...")
+            let date = Date()
+            session.startActivity(with: date)
+            
+            print("🟢 Beginning collection...")
+            try await builder.beginCollection(at: date)
             self.workoutMetrics = .init(workoutConfiguration: configuration)
-            // Отправляем начальные данные о тренировке
+            print("🟢 Sending initial workout update...")
             sendWorkoutUpdate()
-        } catch(let error) {
+            
+            print("🟢 Workout started successfully")
+        } catch {
+            print("🔴 Error starting workout: \(error.localizedDescription)")
             self.error = .startWorkoutFailed(error)
             reset()
         }
@@ -570,5 +546,58 @@ extension WorkoutManager {
         func hash(into hasher: inout Hasher) {
             hasher.combine(id)
         }
+    }
+}
+
+extension WorkoutManager {
+    @MainActor
+    private func requestAuthorization() async throws {
+        guard let healthStore = healthStore else {
+            throw WorkoutError.unavailable
+        }
+        
+        let status = try await healthStore.statusForAuthorizationRequest(toShare: typesToShare, read: [])
+        if status != .unnecessary {
+            try await healthStore.requestAuthorization(toShare: typesToShare, read: [])
+        }
+    }
+    
+    @MainActor
+    private func checkAvailability() async -> Bool {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            self.error = .unavailable
+            return false
+        }
+        
+        guard let healthStore = healthStore else {
+            self.error = .unavailable
+            return false
+        }
+        
+        do {
+            let status = try await healthStore.statusForAuthorizationRequest(toShare: typesToShare, read: [])
+            if status != .unnecessary {
+                try await healthStore.requestAuthorization(toShare: typesToShare, read: [])
+            }
+            return true
+        } catch {
+            self.error = .requestPermissionError(error)
+            return false
+        }
+    }
+    
+    private func sendWorkoutUpdate() {
+        guard let workoutType = workoutType else { return }
+        
+        let data: [String: Any] = [
+            "workoutType": workoutType.rawValue,
+            "startTime": startTime,
+            "heartRate": heartRate,
+            "calories": calories,
+            "distance": distance,
+            "duration": duration
+        ]
+        
+        watchConnectivityManager.sendWorkoutData(data)
     }
 }
