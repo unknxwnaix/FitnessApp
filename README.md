@@ -22,11 +22,11 @@
 ---
 
 ## 📸 Скриншоты
-###Главный экран
+<p>Главный экран:</p>
 <img width="300" alt="Главный экран" src="https://github.com/user-attachments/assets/2f77f3c6-4c45-415f-8a6f-70470659aea7"/>
 
-###Тренировка
+<p>Тренировка:</p>
 <img width="300" alt="Тренировка" src="https://github.com/user-attachments/assets/cb91fdff-f417-44e0-8b35-48d1933f1eb3" />
 
-###Live Activity
+<p>Live Activity:</p>
 <img width="300" alt="Live Activity" src="https://github.com/user-attachments/assets/466c1342-3ec3-4cf4-98bb-521ad21268e9" />
